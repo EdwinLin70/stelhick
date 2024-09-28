@@ -1,1 +1,1 @@
-Hi, this is a steelhacks 2024 project made by Kenneth Barrett, Edwin Lin, and Jared Young
+Hi, this is a steelhacks 2024 project made by Kenneth Lin, Edwin Lin, and Jared Young
