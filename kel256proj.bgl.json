@@ -1,0 +1,191 @@
+{
+  "title": "Kel256Proj",
+  "description": "A blank board. Use it as a starting point for your creations.",
+  "version": "0.0.1",
+  "nodes": [
+    {
+      "id": "input-03fe4a18",
+      "type": "input",
+      "metadata": {
+        "visual": {
+          "x": -411,
+          "y": -91,
+          "collapsed": "expanded"
+        },
+        "title": "Choose Location",
+        "logLevel": "debug"
+      },
+      "configuration": {
+        "schema": {
+          "properties": {
+            "location": {
+              "type": "string",
+              "title": "Query",
+              "examples": [],
+              "description": "Enter a search query for any political subject.",
+              "default": "politics"
+            }
+          },
+          "type": "object",
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "output",
+      "id": "output",
+      "configuration": {
+        "schema": {
+          "properties": {
+            "context": {
+              "type": "array",
+              "title": "Context",
+              "examples": [],
+              "items": {
+                "type": "object",
+                "behavior": [
+                  "llm-content"
+                ]
+              },
+              "default": "null"
+            }
+          },
+          "type": "object",
+          "required": []
+        }
+      },
+      "metadata": {
+        "visual": {
+          "x": 981,
+          "y": -131,
+          "collapsed": "expanded"
+        }
+      }
+    },
+    {
+      "id": "specialist-cef5e47c",
+      "type": "specialist",
+      "metadata": {
+        "visual": {
+          "x": 201,
+          "y": -150,
+          "collapsed": "expanded"
+        },
+        "title": "Search",
+        "logLevel": "debug"
+      },
+      "configuration": {
+        "model": "gemini-1.5-flash-latest",
+        "persona": {
+          "role": "user",
+          "parts": [
+            {
+              "text": "Using the Google News Tool, summarize the top searches of the query and list 3 key points of each"
+            }
+          ]
+        },
+        "task": {
+          "role": "user",
+          "parts": [
+            {
+              "text": ""
+            }
+          ]
+        },
+        "tools": [
+          "https://dglazkov-googlenews.web.val.run/bgl"
+        ]
+      }
+    },
+    {
+      "id": "content-c3f2706d",
+      "type": "content",
+      "metadata": {
+        "visual": {
+          "x": -151,
+          "y": -107,
+          "collapsed": "expanded"
+        },
+        "title": "Content",
+        "logLevel": "debug"
+      },
+      "configuration": {
+        "template": {
+          "role": "user",
+          "parts": [
+            {
+              "text": "{{trends}} {{politics}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "specialist-eb8f6d81",
+      "type": "specialist",
+      "metadata": {
+        "visual": {
+          "x": 576,
+          "y": -120,
+          "collapsed": "expanded"
+        },
+        "title": "Specialist",
+        "logLevel": "debug"
+      },
+      "configuration": {
+        "model": "gemini-1.5-flash-latest",
+        "persona": {
+          "role": "user",
+          "parts": [
+            {
+              "text": "You are an unbiased reporter, given the current conversation, display the only the first 15 articles in this format\n\nNews Source (in bold)\n\nSummarized title (in bold)\n3 points in bullet points\n\nList in Italics (without bullet points) if the article is politically biased (left-leaning/right-leaning/neutral) in the form of \"This article is (political bias)\"\n\nList any political bias or misinformation in the article in bullet points (all in italic)"
+            }
+          ]
+        },
+        "task": {
+          "role": "user",
+          "parts": [
+            {
+              "text": ""
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "input-03fe4a18",
+      "to": "content-c3f2706d",
+      "out": "location",
+      "in": "p-trends"
+    },
+    {
+      "from": "content-c3f2706d",
+      "to": "specialist-cef5e47c",
+      "out": "context",
+      "in": "in"
+    },
+    {
+      "from": "specialist-cef5e47c",
+      "to": "specialist-eb8f6d81",
+      "out": "out",
+      "in": "in"
+    },
+    {
+      "from": "specialist-eb8f6d81",
+      "to": "output",
+      "out": "out",
+      "in": "context"
+    },
+    {
+      "from": "input-03fe4a18",
+      "to": "content-c3f2706d",
+      "out": "location",
+      "in": "p-politics"
+    }
+  ],
+  "metadata": {
+    "comments": []
+  }
+}
